@@ -1,6 +1,5 @@
 from fastai.vision import *
 
-from fastai.utils.mem import *
 
 arch_name = "cloudnet_plus"
 
@@ -21,7 +20,7 @@ class ContractionBlock(nn.Module):
 
             self.conv4 = conv_layer(ni, ni, ks=1, stride=1, padding=0, bias=True)
 
-        # TODO test replacing maxpool in original cloudNet with maxpool
+        # TODO test replacing maxpool in original cloudNet with convolution downsampling
         # self.conv5 = res_block(2 * ni)
         self.layer5 = nn.MaxPool2d(3, stride=2, padding=1)
 
@@ -52,7 +51,7 @@ class FeedforwardBlock(nn.Module):
 
             layer = nn.MaxPool2d(3, stride=s, padding=1)
 
-            # TODO test replacing maxpool in original cloudNet with maxpool
+            # TODO test replacing maxpool in original cloudNet with convolution downsampling
             # self.layer5 = conv_layer(2*ni, 2*ni, ks=3, stride=2, padding=1, bias=True)
 
             self.poolings.append(layer)
@@ -89,6 +88,7 @@ class ExpandingBlock(nn.Module):
     def __init__(self, ni, residual=False):
         super().__init__()
 
+        # TODO test replacing transposed convolution in original cloudNet with subpixel convolution:
 #        self.upsmpl = nn.ConvTranspose2d(2 * ni, ni, 3, stride=2, padding=1, output_padding=1)
         self.upsmpl = PixelShuffle_ICNR(2*ni, ni, scale = 2)
 
@@ -123,8 +123,8 @@ class UpsamplingBlock(nn.Module):
         self.n = n
 
         self.upsmpl = nn.Upsample(scale_factor=(2 ** (n + 2), 2 ** (n + 2)))
-
         #self.upsmpl = PixelShuffle_ICNR(ni, ni, scale=2 ** (n + 2))
+
 #        if residual:
 #            self.conv2 = conv_layer(nout, nout, ks=1, stride=1, padding=0)
         self.conv1 = conv_layer(ni, nout, ks=1, stride=1, padding=0)
@@ -277,5 +277,3 @@ if __name__ == '__main__':
     print(O.shape)
     print(G)
 
-
-    model.cuda()
