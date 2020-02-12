@@ -49,11 +49,10 @@ if __name__ == '__main__':
     wd=1e-2
 
     model = CloudNetPlus(input_channels=3, n_classes=data.c)
-#    learn = unet_learner(data, models.vgg11_bn, pretrained=False, metrics=metrics)
+#    learn = unet_learner(data, models.resnet34, pretrained=False, metrics=metrics)
     learn = Learner(data, model, metrics=metrics, path='', model_dir='models', wd=1e-2)
-#    #learn.loss_func = CrossEntropyFlat()
-
-    learn.loss_func = FlattenedLoss(FilteredJaccardLoss, axis=1)
+#    learn.loss_func = CrossEntropyFlat()
+#    learn.loss_func = FlattenedLoss(FilteredJaccardLoss, axis=1)
 #    learn.summary()
 
     lr=3e-3
